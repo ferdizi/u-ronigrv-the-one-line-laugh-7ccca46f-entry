@@ -14,6 +14,15 @@ if (LINE.length < 1 || LINE.length > 200) {
 if (!LINE.trim()) {
   throw new Error("entry line must not be only whitespace");
 }
+// The rules require one line that stands alone as a single sentence:
+// no newline inside, and exactly one sentence-ending mark, at the end.
+if (LINE.includes("\n")) {
+  throw new Error("entry line must be a single line");
+}
+const enders = (LINE.match(/[.!?]/g) ?? []).length;
+if (enders !== 1 || !/[.!?]$/.test(LINE)) {
+  throw new Error(`entry line must be exactly one sentence, got ${enders} sentence-ending marks`);
+}
 mkdirSync(outDir, { recursive: true });
 // No trailing newline: the gate counts every character of entry.txt,
 // so the file holds the line and nothing else. Same bytes every run.
